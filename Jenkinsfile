@@ -12,7 +12,6 @@ pipeline {
       stage('Build') {
          steps {
             script{
-               checkout scm
                sh 'rm -rf *.war'
                sh 'jar -cvf studentsurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
