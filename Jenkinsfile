@@ -12,7 +12,7 @@ pipeline {
       stage('Build') {
          steps {
             script{
-               sh 'rm -rf src/*.war'
+               sh 'rm -rf ../*.war'
                dir('src/main/webapp') {
                         // Specify the path for the war file creation
                         sh 'jar -cvf ../surveyform.war .'
