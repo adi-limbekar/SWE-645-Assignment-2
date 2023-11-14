@@ -1,50 +1,49 @@
 pipeline {
-     agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
+   environment {
+        registry = "swe645/studentSurveyForm"
+        registryCredential = 'dockerhub'
+        TIMESTAMP = new Date().format("yyyyMMdd_HHmmss")
     }
+   agent any
 
-    environment {
-        DOCKER_IMAGE = "adi0222/studentsurveyform:${env.BUILD_ID}"
-        KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
-    }
-
-    stages {
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("$DOCKER_IMAGE")
-                }
+   stages {
+      stage('Build') {
+         steps {
+            script{
+               sh 'rm -rf *.war'
+               sh 'jar -cvf surveyform.war -C src/main/webapp/ .'
+               //sh 'echo ${BUILD_TIMESTAMP}'
+               docker.withRegistry('',registryCredential){
+                  def customImage = docker.build("adi0222/studentsurveyform:${env.TIMESTAMP}")
+               }
             }
-        }
+         }
+      }
 
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerHubCredentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                        sh "docker push $DOCKER_IMAGE"
-                    }
-                }
+      stage('Push Image to Dockerhub') {
+         steps {
+            script{
+               docker.withRegistry('',registryCredential){
+                  sh "docker push adi0222/studentsurveyform:${env.TIMESTAMP}"
+               }
             }
-        }
+         }
+      }
 
-        stage('Deploying to Rancher as Load Balancer') {
-            steps {
-                withCredentials([file(credentialsId: "$KUBECONFIG_CREDENTIALS_ID", variable: 'KUBECONFIG')]) {
-                    sh 'kubectl set image deployment/surveyformlb container-0=$DOCKER_IMAGE'
-                }
+      stage('Deploying to Rancher to single node(deployed in 3 replicas)') {
+         steps {
+            script{
+               sh "kubectl set image deployment/deploymentone container-0=adi0222/studentsurveyform:${env.TIMESTAMP}"
             }
-        }
+         }
+      }
 
-        stage('Deploying to Rancher as Node Port') {
-            steps {
-                withCredentials([file(credentialsId: "$KUBECONFIG_CREDENTIALS_ID", variable: 'KUBECONFIG')]) {
-                    sh 'kubectl set image deployment/surveyformnp container-0=$DOCKER_IMAGE'
-                }
+      stage('Deploying to Rancher using Load Balancer as a service') {
+         steps {
+            script{
+               sh "kubectl set image deployment/deploymentone-lb container-0=adi0222/studentsurveyform:${env.TIMESTAMP}"
             }
-        }
-    }
+         }
+      }
+   }
 }
