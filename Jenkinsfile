@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "adi0222/surveyformimage:${env.BUILD_ID}"
-        KUBECONFIG_CREDENTIALS_ID = '5574b1da-9b69-451a-b775-bdf66c5ec6e2'
+        DOCKER_IMAGE = "adi0222/surveyform-image:${env.BUILD_ID}"
+        KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
     }
 
     stages {
