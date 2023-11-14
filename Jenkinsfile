@@ -4,7 +4,7 @@ pipeline {
         registryCredential = 'DockerHubCredentials'
         TIMESTAMP = new Date().format("yyyy-MM-dd")
         KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
-        DOCKER_IMAGE = "adi0222/surveyformimage:${env.TIMESTAMP}"
+        DOCKER_IMAGE = "adi0222/studentsurveyform:${env.TIMESTAMP}"
     }
    agent any
 
