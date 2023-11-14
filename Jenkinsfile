@@ -2,7 +2,7 @@ pipeline {
    environment {
         registry = "adi0222/studentSurveyForm"
         registryCredential = 'DockerHubCredentials'
-        TIMESTAMP = new Date().format("yyyy-MM-dd:HH-mm-ss")
+        TIMESTAMP = new Date().format("yyyy-MM-dd-HH-mm-ss")
         KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
         DOCKER_IMAGE = "adi0222/studentsurveyform:${env.TIMESTAMP}"
     }
