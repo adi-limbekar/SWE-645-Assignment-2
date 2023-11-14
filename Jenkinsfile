@@ -10,7 +10,7 @@ pipeline {
       stage('Build') {
          steps {
             script{
-               checkout SCM
+               checkout scm
                sh 'rm -rf *.war'
                sh 'jar -cvf studentSurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
