@@ -1,4 +1,4 @@
-ypipeline {
+pipeline {
    environment {
         registry = "adi0222/studentSurveyForm"
         registryCredential = 'DockerHubCredentials'
@@ -12,7 +12,7 @@ ypipeline {
             script{
                checkout scm
                sh 'rm -rf *.war'
-               sh 'jar -cvf studentSurveyForm.war -C src/main/webapp/ .'
+               sh 'jar -cvf studentsurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
                docker.withRegistry('',registryCredential){
                   def customImage = docker.build("adi0222/studentsurveyform:${env.TIMESTAMP}")
