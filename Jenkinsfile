@@ -12,11 +12,8 @@ pipeline {
       stage('Build') {
          steps {
             script{
-               dir('src'){
-                  sh 'rm -rf *.war'
-                  sh 'jar -cvf studentsurveyForm.war -C src/main/webapp/ .'
-               }
-               
+               sh 'rm -rf *.war'
+               sh 'jar -cvf ../src/studentsurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
                docker.withRegistry('',registryCredential){
                   def customImage = docker.build("$DOCKER_IMAGE")
