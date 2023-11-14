@@ -1,7 +1,7 @@
 pipeline {
    environment {
         registry = "swe645/studentSurveyForm"
-        registryCredential = 'dockerhub'
+        registryCredential = 'Georgemason1'
         TIMESTAMP = new Date().format("yyyyMMdd_HHmmss")
     }
    agent any
