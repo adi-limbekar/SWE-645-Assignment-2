@@ -1,6 +1,6 @@
 pipeline {
    environment {
-        registry = "swe645/studentSurveyForm"
+        registry = "adi0222/studentSurveyForm"
         registryCredential = 'Georgemason1'
         TIMESTAMP = new Date().format("yyyyMMdd_HHmmss")
     }
