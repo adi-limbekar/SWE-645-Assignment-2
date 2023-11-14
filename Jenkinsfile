@@ -2,7 +2,9 @@ pipeline {
    environment {
         registry = "adi0222/studentSurveyForm"
         registryCredential = 'DockerHubCredentials'
-        TIMESTAMP = new Date().format("yyyyMMdd_HHmmss")
+        TIMESTAMP = new Date().toString()
+        KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
+        DOCKER_IMAGE = "adi0222/surveyformimage:${env.TIMESTAMP}"
     }
    agent any
 
@@ -15,7 +17,7 @@ pipeline {
                sh 'jar -cvf studentsurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
                docker.withRegistry('',registryCredential){
-                  def customImage = docker.build("adi0222/studentsurveyform:${env.TIMESTAMP}")
+                  def customImage = docker.build("$DOCKER_IMAGE")
                }
             }
          }
@@ -25,26 +27,26 @@ pipeline {
          steps {
             script{
                docker.withRegistry('',registryCredential){
-                  sh "docker push adi0222/studentsurveyform:${env.TIMESTAMP}"
+                  sh "docker push $DOCKER_IMAGE"
                }
             }
          }
       }
 
-      stage('Deploying to Rancher using Node port as a service') {
-         steps {
-            script{
-               sh "kubectl set image deployment/surveyformnp container-0=adi0222/studentsurveyform:${env.TIMESTAMP}"
+      stage('Deploying to Rancher as Load Balancer') {
+            steps {
+                withCredentials([file(credentialsId: "$KUBECONFIG_CREDENTIALS_ID", variable: 'KUBECONFIG')]) {
+                    sh 'kubectl set image deployment/surveyformlb container-0=$DOCKER_IMAGE'
+                }
             }
-         }
-      }
+        }
 
-      stage('Deploying to Rancher using Load Balancer as a service') {
-         steps {
-            script{
-               sh "kubectl set image deployment/surveyformlb container-0=adi0222/studentsurveyform:${env.TIMESTAMP}"
+        stage('Deploying to Rancher as Node Port') {
+            steps {
+                withCredentials([file(credentialsId: "$KUBECONFIG_CREDENTIALS_ID", variable: 'KUBECONFIG')]) {
+                    sh 'kubectl set image deployment/surveyformnp container-0=$DOCKER_IMAGE'
+                }
             }
-         }
-      }
+        }
    }
 }
