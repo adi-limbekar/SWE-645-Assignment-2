@@ -12,7 +12,7 @@ pipeline {
       stage('Build') {
          steps {
             script{
-               sh 'rm -rf *.war'
+               sh 'rm -rf src/*.war'
                sh 'jar -cvf studentsurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
                docker.withRegistry('',registryCredential){
