@@ -10,8 +10,9 @@ pipeline {
       stage('Build') {
          steps {
             script{
+               checkout SCM
                sh 'rm -rf *.war'
-               sh 'jar -cvf surveyform.war -C src/main/ .'
+               sh 'jar -cvf studentSurveyForm.war -C src/main/webapp/ .'
                sh 'echo ${BUILD_TIMESTAMP}'
                docker.withRegistry('',registryCredential){
                   def customImage = docker.build("adi0222/studentsurveyform:${env.TIMESTAMP}")
