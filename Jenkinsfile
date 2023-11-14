@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "adi0222/surveyFormImage:${env.BUILD_ID}"
+        DOCKER_IMAGE = "adi0222/studentsurveyform:${env.BUILD_ID}"
         KUBECONFIG_CREDENTIALS_ID = 'K8scluster'
     }
 
